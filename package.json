@@ -7,6 +7,9 @@
     "deploy": "node deploy-commands.js",
     "dev": "nodemon index.js"
   },
+  "engines": {
+    "node": "22.x"
+  },
   "author": "",
   "license": "ISC",
   "description": "meeting reminder discord bot",

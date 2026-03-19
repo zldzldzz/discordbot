@@ -3,20 +3,17 @@ require("dotenv").config();
 const { Client, GatewayIntentBits, Collection } = require("discord.js");
 const { ReminderManager } = require("./services/reminderManager");
 const repeatReminderCommand = require("./commands/repeatReminder");
+const dateReminderCommand = require("./commands/dateReminder");
 const stopReminderCommand = require("./commands/stopReminder");
 const listRemindersCommand = require("./commands/listReminders");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [GatewayIntentBits.Guilds],
 });
 
 const reminderManager = new ReminderManager(client);
 
-const commands = [
-  repeatReminderCommand,
-  stopReminderCommand,
-  listRemindersCommand
-];
+const commands = [repeatReminderCommand, dateReminderCommand, stopReminderCommand, listRemindersCommand];
 
 client.commands = new Collection();
 for (const command of commands) {
@@ -25,7 +22,7 @@ for (const command of commands) {
 
 client.once("ready", () => {
   console.log(`로그인 완료: ${client.user.tag}`);
-  console.log(`현재 메모리 내 알림 수: ${reminderManager.count()}`);
+  console.log(`복원된 알림 수: ${reminderManager.count()}`);
 });
 
 client.on("interactionCreate", async (interaction) => {

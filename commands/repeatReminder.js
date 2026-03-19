@@ -23,30 +23,17 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("반복알림")
     .setDescription("매주 특정 요일/시간에 반복 알림을 등록합니다.")
+    .addStringOption((option) => option.setName("요일").setDescription("예: 월, 월요일, 화, 화요일").setRequired(true))
+    .addStringOption((option) => option.setName("시간").setDescription("예: 09:50").setRequired(true))
     .addStringOption((option) =>
-      option
-        .setName("요일")
-        .setDescription("예: 월, 월요일, 화, 화요일")
-        .setRequired(true)
-    )
-    .addStringOption((option) =>
-      option
-        .setName("시간")
-        .setDescription("예: 09:50")
-        .setRequired(true)
-    )
-    .addStringOption((option) =>
-      option
-        .setName("메시지")
-        .setDescription("예: 10분 뒤 회의가 시작됩니다. 오늘은 ${요일} 입니다.")
-        .setRequired(true)
+      option.setName("메시지").setDescription("예: 10분 뒤 회의가 시작됩니다. 오늘은 ${요일} 입니다.").setRequired(true)
     ),
 
   async execute(interaction, reminderManager) {
     if (!interaction.inGuild()) {
       await interaction.reply({
         content: "이 명령어는 서버 안에서만 사용할 수 있습니다.",
-        ephemeral: true
+        ephemeral: true,
       });
       return;
     }
@@ -65,36 +52,38 @@ module.exports = {
     } catch (error) {
       await interaction.reply({
         content: error.message,
-        ephemeral: true
+        ephemeral: true,
       });
       return;
     }
 
     try {
-      const reminder = reminderManager.addReminder({
+      const reminder = reminderManager.addWeeklyReminder({
         guildId: interaction.guildId,
         channelId: interaction.channelId,
         creatorId: interaction.user.id,
         weekday,
         hour,
         minute,
-        messageTemplate
+        messageTemplate,
       });
 
       await interaction.reply({
         content:
           `반복 알림이 등록되었습니다.\n` +
           `ID: \`${reminder.id}\`\n` +
-          `반복: \`매주 ${formatWeekday(reminder.weekday)} ${String(reminder.hour).padStart(2, "0")}:${String(reminder.minute).padStart(2, "0")}\`\n` +
+          `반복: \`매주 ${formatWeekday(reminder.weekday)} ${String(reminder.hour).padStart(2, "0")}:${String(
+            reminder.minute
+          ).padStart(2, "0")}\`\n` +
           `다음 실행: \`${reminderManager.formatDateTime(reminder.nextRunAt)}\`\n` +
           `채널: <#${reminder.channelId}>`,
-        ephemeral: true
+        ephemeral: true,
       });
     } catch (error) {
       await interaction.reply({
         content: error.message,
-        ephemeral: true
+        ephemeral: true,
       });
     }
-  }
+  },
 };
